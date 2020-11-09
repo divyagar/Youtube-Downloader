@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.filedialog
-# from tkcalendar import DateEntry
+from tkcalendar import DateEntry
 
 class GuiApp(tk.Frame):
     def __init__(self, master):
@@ -223,9 +223,10 @@ class Frame3(tk.Frame):
         self.grid_propagate(0)
 
         # first row
-        firstFrame = tk.Frame(self, bg = 'red', width = 758, height = 80)
+        firstFrame = tk.Frame(self, width = 758, height = 80)
+        # firstFrame['bg'] = 'red'
         firstFrame.grid_propagate(0)
-        firstFrame.grid(row=0, column=0, padx=20, pady=20)
+        firstFrame.grid(row=0, column=0, padx=20, pady=(20,0))
 
         label = tk.Label(firstFrame, text = "Youtube playlist link :")
         label.grid(row = 0, column = 0, sticky = tk.W, padx = 20, pady=5)
@@ -236,13 +237,13 @@ class Frame3(tk.Frame):
 
         # second row
         secondFrame = tk.Frame(self, width=758, height=50)
-        secondFrame['bg'] = "green"
+        # secondFrame['bg'] = "green"
         secondFrame.grid_propagate(0)
         secondFrame.grid(row=1, column=0, padx=20)
 
-        criteria = tk.StringVar();
-
-        sizeLabel = tk.Radiobutton(secondFrame, text = "Size Criteria")
+        self.criteria = tk.StringVar();
+        self.criteria.set("1")
+        sizeLabel = tk.Radiobutton(secondFrame, text = "Size Criteria", variable=self.criteria, value="1")
         sizeLabel.grid(row=0, column=0, sticky=tk.W, padx=20, pady=5)
 
         minSize = tk.Checkbutton(secondFrame, text = "Minimum : ", onvalue=1, offvalue=0, width=14)
@@ -270,6 +271,66 @@ class Frame3(tk.Frame):
         sizeSelection2.grid(row=0, column=6, sticky=tk.W, padx=(2,20))
         sizeSelection2.configure(state="disabled")
         # second row ends
+
+        #third row
+        thirdFrame = tk.Frame(self, width=758, height=50)
+        # thirdFrame['bg'] = "yellow"
+        thirdFrame.grid_propagate(0)
+        thirdFrame.grid(row=2, column=0, padx=20)
+
+        dateLabel = tk.Radiobutton(thirdFrame, text = "Date Criteria", variable=self.criteria, value="2")
+        dateLabel.grid(row=0, column=0, sticky=tk.W, padx=20, pady=5)
+
+        self.dates = ['On this date', 'Before this date', 'After this date', 'After and before these dates']
+        self.date = tk.StringVar()
+        self.date.set('On this date')
+        dateSelection = tk.OptionMenu(thirdFrame, self.date, *self.dates)
+        dateSelection.grid(row=0, column=1, sticky=tk.W, padx = 20)
+        dateSelection.configure(state="disabled")
+
+        date1 = DateEntry(thirdFrame, width=12)
+        date1.grid(row=0, column=2, sticky = tk.W, padx = 10)
+
+        date2 = DateEntry(thirdFrame, width=12)
+        date2.grid(row=0, column=3, sticky = tk.W, padx = 10)
+
+        #third row ends
+
+        #fourth row
+        fourthFrame = tk.Frame(self, width=758, height=50)
+        # fourthFrame['bg'] = "Orange"
+        fourthFrame.grid_propagate(0)
+        fourthFrame.grid(row=3, column=0, padx=20)
+
+        specificCriteria = tk.Radiobutton(fourthFrame, text = "Specific videos", variable=self.criteria, value="3")
+        specificCriteria.grid(row=0, column=0, padx=20, sticky=tk.W)
+
+        self.specifics = ['Mention indices(separated by commas)', 'Mention start and end of playlist(separated by space']
+        self.specifc = tk.StringVar()
+        self.specifc.set('Mention indices(separated by commas)')
+        videoSelection = tk.OptionMenu(fourthFrame, self.specifc, *self.specifics)
+        videoSelection.grid(row=0, column=1, sticky=tk.W, padx=10)
+        videoSelection.configure(state='disabled')
+
+        selectionValue = tk.Entry(fourthFrame, width=20, state=tk.DISABLED)
+        selectionValue.grid(row=0, column=2, sticky=tk.W, padx=10)
+
+        #fourth row ends
+
+        #fifth row
+        outputFrame = tk.Frame(self, width=758, height=250)
+        # outputFrame['bg'] = "pink"
+        outputFrame.grid_propagate(0)
+        outputFrame.grid(row=4, column=0, padx=20)
+
+        outputWindow = tk.Text(outputFrame, width=90, height=13, state=tk.DISABLED)
+        outputWindow.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
+
+
+        #fifth row ends
+
+    def radiobut(self):
+        print("pressed")
 
     def getCriteria(self, *criterias):
         pass
