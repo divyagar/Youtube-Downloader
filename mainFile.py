@@ -5,15 +5,14 @@ from tkcalendar import DateEntry
 class GuiApp(tk.Frame):
     def __init__(self, master):
         self.master = master
-        # print(type(self))
         tk.Frame.__init__(self, master)
 
         f1 = Frame1(self)
-        f1.grid(row=1,column=0)
+        f1.grid(row=2,column=0)
         f2 = Frame2(self)
-        f2.grid(row=1,column=0)
+        f2.grid(row=2,column=0)
         f3 = Frame3(self)
-        f3.grid(row=1,column=0)
+        f3.grid(row=2,column=0)
 
         self.f = []
         self.f.append(f1)
@@ -23,9 +22,9 @@ class GuiApp(tk.Frame):
         tf = TopFrame(self)
         tf.grid(row=0, column=0)
 
+        self.show_frame(0);
 
     def show_frame(self, idx):
-        print("function called")
         frm = self.f[idx]
         frm.tkraise()
 
@@ -34,17 +33,21 @@ class TopFrame(tk.Frame):
     def __init__(self, parent):
         self.parent = parent
         tk.Frame.__init__(self, self.parent)
-        self.b1 = tk.Button(self, text = "button1", command = lambda : parent.show_frame(0))
-        self.b1.pack(side = "left")
-        self.b2 = tk.Button(self, text = "button2", command = lambda : parent.show_frame(1))
-        self.b2.pack(side = "left")
-        self.b3 = tk.Button(self, text = "button3", command = lambda : parent.show_frame(2))
-        self.b3.pack(side = "left")
+        self.b1 = tk.Button(self, text = "Video", command = lambda : parent.show_frame(0))
+        self.b1.grid(row=0, column=1, padx=15, pady=10)
+        self.b2 = tk.Button(self, text = "Audio", command = lambda : parent.show_frame(1))
+        self.b2.grid(row=0, column=2, padx=15, pady=10)
+        self.b3 = tk.Button(self, text = "Playlist", command = lambda : parent.show_frame(2))
+        self.b3.grid(row=0, column=3, padx=15, pady=10)
+        canvas = tk.Canvas(self.master, width=750, height=4)
+        canvas.create_line(0, 2, 750, 2, fill="gray", tags="line")
+        canvas.grid(row=1, column=0)
+
 
 class Frame1(tk.Frame):
     def __init__(self, parent):
         self.parent = parent
-        tk.Frame.__init__(self, self.parent, width = 800, height = 600, borderwidth = 1)
+        tk.Frame.__init__(self, self.parent, width = 800, height = 500, borderwidth = 1)
         self.grid_propagate(0)
 
         # Frame for checkboxes and their respective entry widgets
@@ -150,7 +153,7 @@ class Frame1(tk.Frame):
 class Frame2(tk.Frame):
     def __init__(self, parent):
         self.parent = parent
-        tk.Frame.__init__(self, self.parent, width = 800, height = 600, borderwidth = 1)
+        tk.Frame.__init__(self, self.parent, width = 800, height = 500, borderwidth = 1)
         self.grid_propagate(0)
 
         # Frame for checkboxes and their respective entry widgets
@@ -219,7 +222,7 @@ class Frame2(tk.Frame):
 class Frame3(tk.Frame):
     def __init__(self, parent):
         self.parent = parent
-        tk.Frame.__init__(self, self.parent, width = 800, height = 600, borderwidth = 1)
+        tk.Frame.__init__(self, self.parent, width = 800, height = 500, borderwidth = 1)
         self.grid_propagate(0)
 
         # first row
@@ -336,19 +339,18 @@ class Frame3(tk.Frame):
         pass
 
 
-root = tk.Tk()
-root.geometry("800x500")
-f1 = Frame3(root)
-f1.grid(row=0, column=0)
-
-root.mainloop()
-
-
 # root = tk.Tk()
-# print(type(root))
-# app = GuiApp(root)
-# app.pack(side = "left", fill = "both", expand = True)
+# root.geometry("800x600")
+# f1 = Frame3(root)
+# f1.grid(row=0, column=0)
+#
 # root.mainloop()
+
+
+root = tk.Tk()
+app = GuiApp(root)
+app.pack(side = "left", fill = "both", expand = True)
+root.mainloop()
 
 
 
