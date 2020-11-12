@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.filedialog
 from tkcalendar import DateEntry
+from tkinter import messagebox
 
 class GuiApp(tk.Frame):
     def __init__(self, master):
@@ -33,11 +34,11 @@ class TopFrame(tk.Frame):
     def __init__(self, parent):
         self.parent = parent
         tk.Frame.__init__(self, self.parent)
-        self.b1 = tk.Button(self, text = "Video", command = lambda : parent.show_frame(0))
+        self.b1 = tk.Button(self, text = "Video", command = lambda : parent.show_frame(0), width=10)
         self.b1.grid(row=0, column=1, padx=15, pady=10)
-        self.b2 = tk.Button(self, text = "Audio", command = lambda : parent.show_frame(1))
+        self.b2 = tk.Button(self, text = "Audio", command = lambda : parent.show_frame(1), width=10)
         self.b2.grid(row=0, column=2, padx=15, pady=10)
-        self.b3 = tk.Button(self, text = "Playlist", command = lambda : parent.show_frame(2))
+        self.b3 = tk.Button(self, text = "Playlist", command = lambda : parent.show_frame(2), width=10)
         self.b3.grid(row=0, column=3, padx=15, pady=10)
         canvas = tk.Canvas(self.master, width=750, height=4)
         canvas.create_line(0, 2, 750, 2, fill="gray", tags="line")
@@ -131,16 +132,26 @@ class Frame1(tk.Frame):
         #-------------------------------
         # third frame ends
 
-        # fourth frame
+        #fourth frame
+        downloadFrame = tk.Frame(self, width=758, height=200)
+        downloadFrame.grid(row=3, column=0, padx=20)
+
+        self.downloadBtn = tk.Button(downloadFrame, text = "Download")
+        self.downloadBtn.pack()
+        helv36 = tk.font.Font(family='Helvetica', size=14, weight='bold')
+        self.downloadBtn['font'] = helv36
+        #fourth frame ends
+
+        # fifth frame
         outputFrame = tk.Frame(self, width = 758, height = 200)
         # outputFrame['bg'] = 'orange'
         outputFrame.grid_propagate(0)
-        outputFrame.grid(row=3, column=0, padx=20)
+        outputFrame.grid(row=4, column=0, padx=20)
 
         outputWindow = tk.Text(outputFrame, width=90, height=10, state=tk.DISABLED)
         outputWindow.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
 
-        # fourth frame ends
+        # fifth frame ends
 
     # testing function for directory selection
     def getDir(self):
@@ -203,11 +214,21 @@ class Frame2(tk.Frame):
         #----------------------------------
         #second frame ends
 
+        #third frame
+        downloadFrame = tk.Frame(self, width=758, height=200)
+        downloadFrame.grid(row=3, column=0, padx=20)
+
+        self.downloadBtn = tk.Button(downloadFrame, text = "Download")
+        self.downloadBtn.pack()
+        helv36 = tk.font.Font(family='Helvetica', size=14, weight='bold')
+        self.downloadBtn['font'] = helv36
+        #third frame ends
+
         # fourth frame
         outputFrame = tk.Frame(self, width = 758, height = 250)
         # outputFrame['bg'] = 'orange'
         outputFrame.grid_propagate(0)
-        outputFrame.grid(row=3, column=0, padx=20)
+        outputFrame.grid(row=4, column=0, padx=20)
 
         outputWindow = tk.Text(outputFrame, width=90, height=13, state=tk.DISABLED)
         outputWindow.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
@@ -226,125 +247,271 @@ class Frame3(tk.Frame):
         self.grid_propagate(0)
 
         # first row
-        firstFrame = tk.Frame(self, width = 758, height = 80)
+        self.firstFrame = tk.Frame(self, width = 758, height = 80)
         # firstFrame['bg'] = 'red'
-        firstFrame.grid_propagate(0)
-        firstFrame.grid(row=0, column=0, padx=20, pady=(20,0))
+        self.firstFrame.grid_propagate(0)
+        self.firstFrame.grid(row=0, column=0, padx=20, pady=(20,0))
 
-        label = tk.Label(firstFrame, text = "Youtube playlist link :")
-        label.grid(row = 0, column = 0, sticky = tk.W, padx = 20, pady=5)
+        self.label = tk.Label(self.firstFrame, text = "Youtube playlist link :")
+        self.label.grid(row = 0, column = 0, sticky = tk.W, padx = 20, pady=5)
 
-        e1 = tk.Text(firstFrame, width = 42, height=2)
-        e1.grid(row=1, column=0, sticky = tk.NW, padx=20, pady=5)
+        self.playListEntry = tk.Text(self.firstFrame, width = 42, height=2)
+        self.playListEntry.grid(row=1, column=0, sticky = tk.NW, padx=20, pady=5)
         # first row ends
 
         # second row
-        secondFrame = tk.Frame(self, width=758, height=50)
+        self.secondFrame = tk.Frame(self, width=758, height=50)
         # secondFrame['bg'] = "green"
-        secondFrame.grid_propagate(0)
-        secondFrame.grid(row=1, column=0, padx=20)
+        self.secondFrame.grid_propagate(0)
+        self.secondFrame.grid(row=1, column=0, padx=20)
 
         self.criteria = tk.StringVar();
         self.criteria.set("1")
-        sizeLabel = tk.Radiobutton(secondFrame, text = "Size Criteria", variable=self.criteria, value="1")
-        sizeLabel.grid(row=0, column=0, sticky=tk.W, padx=20, pady=5)
+        self.sizeLabel = tk.Radiobutton(self.secondFrame, text = "Size Criteria", variable=self.criteria, value="1", command = self.checkRadioBut)
+        self.sizeLabel.grid(row=0, column=0, sticky=tk.W, padx=20, pady=5)
 
-        minSize = tk.Checkbutton(secondFrame, text = "Minimum : ", onvalue=1, offvalue=0, width=14)
-        minSize.grid(row=0, column=1, sticky=tk.W, padx=(20,5), pady=10)
+        self.subFrame = tk.Frame(self.secondFrame)
+        self.subFrame.grid(row=0, column=1)
 
-        minimum = tk.Entry(secondFrame, width = 10, state = tk.DISABLED)
-        minimum.grid(row=0, column=2, sticky=tk.W, padx = (5,0), pady=10)
+        self.minChecked = tk.IntVar()
+        self.minSize = tk.Checkbutton(self.subFrame, text = "Minimum : ", onvalue=1, offvalue=0, width=14, variable = self.minChecked)
+        self.minSize.grid(row=0, column=0, sticky=tk.W, padx=(20,2), pady=10)
+
+        self.minimum = tk.Entry(self.subFrame, width = 10)
+        self.minimum.grid(row=0, column=1, sticky=tk.W, padx = (2,0), pady=10)
 
         self.sizes = ['KB', 'MB', 'GB']
         self.size = tk.StringVar()
         self.size.set('KB')
-        sizeSelection = tk.OptionMenu(secondFrame, self.size, *self.sizes)
-        sizeSelection.grid(row=0, column=3, sticky=tk.W, padx = (2,20))
-        sizeSelection.configure(state="disabled")
+        self.sizeSelection = tk.OptionMenu(self.subFrame, self.size, *self.sizes)
+        self.sizeSelection.grid(row=0, column=3, sticky=tk.W, padx = (2,20))
 
-        maxSize = tk.Checkbutton(secondFrame, text = "Maximum", onvalue=1, offvalue=0, width=14)
-        maxSize.grid(row=0, column=4, sticky=tk.W, padx=(20,5), pady=10)
+        self.maxChecked = tk.IntVar()
+        self.maxSize = tk.Checkbutton(self.subFrame, text = "Maximum :", onvalue=1, offvalue=0, width=14, variable = self.maxChecked)
+        self.maxSize.grid(row=0, column=4, sticky=tk.W, padx=(20,2), pady=10)
 
-        maximum = tk.Entry(secondFrame, width = 10, state = tk.DISABLED)
-        maximum.grid(row=0, column=5, sticky=tk.W, padx = (5,0), pady=10)
+        self.maximum = tk.Entry(self.subFrame, width = 10)
+        self.maximum.grid(row=0, column=5, sticky=tk.W, padx = (2,0), pady=10)
 
         self.size2 = tk.StringVar()
         self.size2.set('KB')
-        sizeSelection2 = tk.OptionMenu(secondFrame, self.size2, *self.sizes)
-        sizeSelection2.grid(row=0, column=6, sticky=tk.W, padx=(2,20))
-        sizeSelection2.configure(state="disabled")
+        self.sizeSelection2 = tk.OptionMenu(self.subFrame, self.size2, *self.sizes)
+        self.sizeSelection2.grid(row=0, column=6, sticky=tk.W, padx=(2,20))
         # second row ends
 
         #third row
-        thirdFrame = tk.Frame(self, width=758, height=50)
+        self.thirdFrame = tk.Frame(self, width=758, height=50)
         # thirdFrame['bg'] = "yellow"
-        thirdFrame.grid_propagate(0)
-        thirdFrame.grid(row=2, column=0, padx=20)
+        self.thirdFrame.grid_propagate(0)
+        self.thirdFrame.grid(row=2, column=0, padx=20)
 
-        dateLabel = tk.Radiobutton(thirdFrame, text = "Date Criteria", variable=self.criteria, value="2")
-        dateLabel.grid(row=0, column=0, sticky=tk.W, padx=20, pady=5)
+        self.dateLabel = tk.Radiobutton(self.thirdFrame, text = "Date Criteria", variable=self.criteria, value="2", command = self.checkRadioBut)
+        self.dateLabel.grid(row=0, column=0, sticky=tk.W, padx=20, pady=5)
+
+        self.subFrame2 = tk.Frame(self.thirdFrame)
+        self.subFrame2.grid(row=0, column=1)
 
         self.dates = ['On this date', 'Before this date', 'After this date', 'After and before these dates']
         self.date = tk.StringVar()
         self.date.set('On this date')
-        dateSelection = tk.OptionMenu(thirdFrame, self.date, *self.dates)
-        dateSelection.grid(row=0, column=1, sticky=tk.W, padx = 20)
-        dateSelection.configure(state="disabled")
+        self.dateSelection = tk.OptionMenu(self.subFrame2, self.date, *self.dates)
+        self.dateSelection.configure(width=25)
+        self.dateSelection.grid(row=0, column=0, sticky=tk.W, padx = 20)
 
-        date1 = DateEntry(thirdFrame, width=12)
-        date1.grid(row=0, column=2, sticky = tk.W, padx = 10)
+        self.date1 = DateEntry(self.subFrame2, width=12)
+        self.date1.grid(row=0, column=1, sticky = tk.W, padx = 10)
 
-        date2 = DateEntry(thirdFrame, width=12)
-        date2.grid(row=0, column=3, sticky = tk.W, padx = 10)
+        self.date2 = DateEntry(self.subFrame2, width=12)
+        self.date2.grid(row=0, column=2, sticky = tk.W, padx = 10)
 
         #third row ends
 
         #fourth row
-        fourthFrame = tk.Frame(self, width=758, height=50)
+        self.fourthFrame = tk.Frame(self, width=758, height=50)
         # fourthFrame['bg'] = "Orange"
-        fourthFrame.grid_propagate(0)
-        fourthFrame.grid(row=3, column=0, padx=20)
+        self.fourthFrame.grid_propagate(0)
+        self.fourthFrame.grid(row=3, column=0, padx=20)
 
-        specificCriteria = tk.Radiobutton(fourthFrame, text = "Specific videos", variable=self.criteria, value="3")
-        specificCriteria.grid(row=0, column=0, padx=20, sticky=tk.W)
+        self.specificCriteria = tk.Radiobutton(self.fourthFrame, text = "Specific videos", variable=self.criteria, value="3", command = self.checkRadioBut)
+        self.specificCriteria.grid(row=0, column=0, padx=20, sticky=tk.W)
+
+        self.subFrame3 = tk.Frame(self.fourthFrame)
+        self.subFrame3.grid(row=0, column=1)
 
         self.specifics = ['Mention indices(separated by commas)', 'Mention start and end of playlist(separated by space']
         self.specifc = tk.StringVar()
         self.specifc.set('Mention indices(separated by commas)')
-        videoSelection = tk.OptionMenu(fourthFrame, self.specifc, *self.specifics)
-        videoSelection.grid(row=0, column=1, sticky=tk.W, padx=10)
-        videoSelection.configure(state='disabled')
+        self.videoSelection = tk.OptionMenu(self.subFrame3, self.specifc, *self.specifics)
+        self.videoSelection.configure(width=50)
+        self.videoSelection.grid(row=0, column=0, sticky=tk.W, padx=10)
 
-        selectionValue = tk.Entry(fourthFrame, width=20, state=tk.DISABLED)
-        selectionValue.grid(row=0, column=2, sticky=tk.W, padx=10)
+        self.selectionValue = tk.Entry(self.subFrame3, width=20, state=tk.DISABLED)
+        self.selectionValue.grid(row=0, column=1, sticky=tk.W, padx=10)
 
         #fourth row ends
 
+        #fourth row
+        downloadFrame = tk.Frame(self, width=758, height=200)
+        downloadFrame.grid(row=4, column=0, padx=20)
+
+        self.downloadBtn = tk.Button(downloadFrame, text = "Download", command = self.downloadVide)
+        self.downloadBtn.pack()
+        helv36 = tk.font.Font(family='Helvetica', size=14, weight='bold')
+        self.downloadBtn['font'] = helv36
+        #fourth row ends
+
         #fifth row
-        outputFrame = tk.Frame(self, width=758, height=250)
+        self.outputFrame = tk.Frame(self, width=758, height=250)
         # outputFrame['bg'] = "pink"
-        outputFrame.grid_propagate(0)
-        outputFrame.grid(row=4, column=0, padx=20)
+        self.outputFrame.grid_propagate(0)
+        self.outputFrame.grid(row=5, column=0, padx=20)
 
-        outputWindow = tk.Text(outputFrame, width=90, height=13, state=tk.DISABLED)
-        outputWindow.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
+        self.outputWindow = tk.Text(self.outputFrame, width=90, height=13, state=tk.DISABLED)
+        self.outputWindow.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
 
+        self.disableSub2()
+        self.disableSub3()
 
         #fifth row ends
+
+    def downloadVide(self):
+        link = self.playListEntry.get('1.0', 'end-1c')
+        link = " " + link
+        if(len(link) == 0):
+            messagebox.showerror("Error", "Provide Link")
+            return
+
+        options = ""
+
+        criteriaVal = self.criteria.get()
+        if(criteriaVal == "1"):
+            if(self.minChecked.get()):
+                try:
+                    minVal = self.minimum.get()
+                    minVal = int(minVal)
+
+                except Exception as ex:
+                    messagebox.showerror("Error", "Minimum value should be an integer")
+                    return
+
+                size = self.size.get()
+                options += " --min-filesize " + str(minVal) + size[0]
+
+            if (self.maxChecked.get()):
+                try:
+                    maxVal = self.maximum.get()
+                    maxVal = int(maxVal)
+
+                except Exception as ex:
+                    messagebox.showerror("Error", "Maximum value should be an integer")
+                    return
+
+                size = self.size2.get()
+                options += " --max-filesize " + str(maxVal) + size[0]
+
+            print(options)
+        elif(criteriaVal == "2"):
+            date = self.date.get()
+            date1 = self.date1.get()
+            date1 = date1.split('/')
+            date2 = self.date2.get()
+            date2 = date2.split('/')
+
+            for i in range(2):
+                if(len(date1[i]) == 1):
+                    date1[i] = "0" + date1[i]
+                if(len(date2[i]) == 1):
+                    date2[i] = "0" + date2[i]
+
+            if(date == "On this date"):
+                options += " --date 20" + date1[2] + date1[0] + date1[1]
+
+            elif(date == "Before this date"):
+                options += " --datebefore 20" + date1[2] + date1[0] + date1[1]
+
+            elif(date == "After this date"):
+                options += " --dateafter 20" + date1[2] + date1[0] + date1[1]
+
+            else:
+                options += " --datebefore 20" + date1[2] + date1[0] + date1[1] + " --dateafter 20" + date2[2] + date2[0] + date2[1]
+
+            print(options)
+
+        else:
+            specific = self.specifc.get()
+            values = self.selectionValue.get()
+            valuesList = values.split(",")
+            for value in valuesList:
+                try:
+                    value = int(value)
+                except:
+                    messagebox.showerror("Error", "Values should be integer")
+                    return
+
+            if(specific == "Mention indices(separated by commas)"):
+                options += " --playlist-items " + values
+            else:
+                values = values.split(",")
+                if(len(values) >= 1 and len(values[0]) >= 1):
+                    options += " --playlist-start " + values[0]
+
+                    if(len(values) > 1 and len(values[0]) >= 1):
+                        options += " --playlist-end " + values[1]
+
+                else:
+                    messagebox.showerror("Error", "Options box cannot be empty")
+
+            print(options)
+
+        command = "youtube-dl" + options + link
+        print(command)
+
+    def checkRadioBut(self):
+        value = self.criteria.get()
+        if(value == "1"):
+            self.enableSub()
+            self.disableSub2()
+            self.disableSub3()
+
+        elif(value == "2"):
+            self.enableSub2()
+            self.disableSub()
+            self.disableSub3()
+
+        else:
+            self.enableSub3()
+            self.disableSub()
+            self.disableSub2()
+
+    def disableSub(self):
+        for child in self.subFrame.winfo_children():
+            child.configure(state = 'disable')
+
+    def disableSub2(self):
+        for child in self.subFrame2.winfo_children():
+            child.configure(state = 'disable')
+
+    def disableSub3(self):
+        for child in self.subFrame3.winfo_children():
+            child.configure(state = 'disable')
+
+    def enableSub(self):
+        for child in self.subFrame.winfo_children():
+            child.configure(state = 'normal')
+
+    def enableSub2(self):
+        for child in self.subFrame2.winfo_children():
+            child.configure(state = 'normal')
+
+    def enableSub3(self):
+        for child in self.subFrame3.winfo_children():
+            child.configure(state = 'normal')
 
     def radiobut(self):
         print("pressed")
 
     def getCriteria(self, *criterias):
         pass
-
-
-# root = tk.Tk()
-# root.geometry("800x600")
-# f1 = Frame3(root)
-# f1.grid(row=0, column=0)
-#
-# root.mainloop()
 
 
 root = tk.Tk()
