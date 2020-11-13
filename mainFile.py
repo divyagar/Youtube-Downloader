@@ -1,5 +1,7 @@
 import tkinter as tk
 import tkinter.filedialog
+from urllib import request
+import re
 from tkcalendar import DateEntry
 from tkinter import messagebox
 
@@ -52,66 +54,66 @@ class Frame1(tk.Frame):
         self.grid_propagate(0)
 
         # Frame for checkboxes and their respective entry widgets
-        checkBoxFrame = tk.Frame(self, width = 758, height = 120, borderwidth = 1)
+        self.checkBoxFrame = tk.Frame(self, width = 758, height = 120, borderwidth = 1)
         # checkBoxFrame['bg'] = 'red'
-        checkBoxFrame.grid_propagate(0)
-        checkBoxFrame.grid(row=0, column=0, padx=20, pady=5)
+        self.checkBoxFrame.grid_propagate(0)
+        self.checkBoxFrame.grid(row=0, column=0, padx=20, pady=5)
 
         # portion of checkboxes
         self.var = tk.StringVar()
-        r1 = tk.Radiobutton(checkBoxFrame, text = "Youtube link", variable = self.var, value = "1")
-        r1.grid(row=0, column=0, sticky = tk.W, padx=10, pady=10)
-        r2 = tk.Radiobutton(checkBoxFrame, text = "File Path", variable = self.var, value = "2")
-        r2.grid(row=0, column=1, sticky = tk.W, padx=10, pady=10)
+        self.r1 = tk.Radiobutton(self.checkBoxFrame, text = "Youtube link", variable = self.var, value = "1", command = self.checkRadio)
+        self.r1.grid(row=0, column=0, sticky = tk.W, padx=10, pady=10)
+        self.r2 = tk.Radiobutton(self.checkBoxFrame, text = "File Path", variable = self.var, value = "2", command = self.checkRadio)
+        self.r2.grid(row=0, column=1, sticky = tk.W, padx=10, pady=10)
         self.var.set("1")
         #-----------------------------
 
         # portion of entry widgets
-        e1 = tk.Text(checkBoxFrame, width = 42, height=3)
-        e1.grid(row=1, column=0, sticky = tk.W, padx=10, pady=5)
-        e2 = tk.Text(checkBoxFrame, width = 42, height=3)
-        e2.grid(row=1, column=1, sticky = tk.W, padx=10, pady=5)
+        self.e1 = tk.Text(self.checkBoxFrame, width = 42, height=3)
+        self.e1.grid(row=1, column=0, sticky = tk.W, padx=10, pady=5)
+        self.e2 = tk.Text(self.checkBoxFrame, width = 42, height=3, state=tk.DISABLED)
+        self.e2.grid(row=1, column=1, sticky = tk.W, padx=10, pady=5)
         #-----------------------------------
         # First frame ends
 
         # second frame to get custom name, file directory location and dropdown
-        secFrame = tk.Frame(self, width = 758, height = 70)
+        self.secFrame = tk.Frame(self, width = 758, height = 70)
         # secFrame['bg'] = 'green'
-        secFrame.grid_propagate(0)
-        secFrame.grid(row=1, column=0, padx=20)
+        self.secFrame.grid_propagate(0)
+        self.secFrame.grid(row=1, column=0, padx=20)
 
         ## row 1 of second frame
-        customNameLabel = tk.Label(secFrame, text = "Provide custom name : ")
-        customNameLabel.grid(row=0, column=0, sticky=tk.W, padx=10, pady=5)
+        self.customNameLabel = tk.Label(self.secFrame, text = "Provide custom name : ")
+        self.customNameLabel.grid(row=0, column=0, sticky=tk.W, padx=10, pady=5)
 
-        fileLocLabel = tk.Label(secFrame, text = "Choose file location : ", width=23, anchor='w')
-        fileLocLabel.grid(row=0, column=1, sticky=tk.W, padx=10, pady=5)
+        self.fileLocLabel = tk.Label(self.secFrame, text = "Choose file location : ", width=23, anchor='w')
+        self.fileLocLabel.grid(row=0, column=1, sticky=tk.W, padx=10, pady=5)
 
-        chooseQualityLabel = tk.Label(secFrame, text = "Choose Quality : ")
-        chooseQualityLabel.grid(row=0, column=2, sticky=tk.W, padx=10, pady=5)
+        self.chooseQualityLabel = tk.Label(self.secFrame, text = "Choose Quality : ")
+        self.chooseQualityLabel.grid(row=0, column=2, sticky=tk.W, padx=10, pady=5)
         ##---------------------------------
 
         # row2 of second frame
-        customName = tk.StringVar()
-        customNameEntry = tk.Entry(secFrame, width=55, textvariable = customName)
-        customNameEntry.grid(row=1, column=0, sticky = tk.W, padx=10)
+        self.customName = tk.StringVar()
+        self.customNameEntry = tk.Entry(self.secFrame, width=55, textvariable = self.customName)
+        self.customNameEntry.grid(row=1, column=0, sticky = tk.W, padx=10)
 
-        askDirectoryBtn = tk.Button(secFrame, text = "select folder", command = self.getDir)
-        askDirectoryBtn.grid(row=1, column=1, sticky=tk.W, padx=10)
+        self.askDirectoryBtn = tk.Button(self.secFrame, text = "select folder", command = self.getDir)
+        self.askDirectoryBtn.grid(row=1, column=1, sticky=tk.W, padx=10)
 
         self.qualities = ['best video, best audio', 'best video, worst audio', 'worst video, best audio', 'worst video, worst audio']
         self.quality = tk.StringVar()
         self.quality.set("best video, best audio")
-        qualitySelection = tk.OptionMenu(secFrame, self.quality, *self.qualities, command=self.getQuality)
-        qualitySelection.grid(row=1, column=2, sticky=tk.W, padx=10)
+        self.qualitySelection = tk.OptionMenu(self.secFrame, self.quality, *self.qualities, command=self.getQuality)
+        self.qualitySelection.grid(row=1, column=2, sticky=tk.W, padx=10)
         #----------------------------------
         #second frame ends
 
         # third frame
-        additionalData = tk.Frame(self, width = 758, height = 50)
+        self.additionalData = tk.Frame(self, width = 758, height = 50)
         # additionalData['bg'] = 'yellow'
-        additionalData.grid_propagate(0)
-        additionalData.grid(row=2, column=0, padx=20)
+        self.additionalData.grid_propagate(0)
+        self.additionalData.grid(row=2, column=0, padx=20)
 
         self.des = tk.IntVar()
         self.meta = tk.IntVar()
@@ -119,41 +121,94 @@ class Frame1(tk.Frame):
         self.sub = tk.IntVar()
         self.thumb = tk.IntVar()
 
-        description = tk.Checkbutton(additionalData, text = "Description", onvalue=1, offvalue=0, width=14)
-        description.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
-        metadata = tk.Checkbutton(additionalData, text = "Metadata", onvalue=1, offvalue=0, width=14)
-        metadata.grid(row=0, column=1, sticky=tk.W, padx=10, pady=10)
-        annotation = tk.Checkbutton(additionalData, text = "Annotation", onvalue=1, offvalue=0, width=14)
-        annotation.grid(row=0, column=2, sticky=tk.W, padx=10, pady=10)
-        subtitle = tk.Checkbutton(additionalData, text = "Subtitle", onvalue=1, offvalue=0, width=14)
-        subtitle.grid(row=0, column=3, sticky=tk.W, padx=10, pady=10)
-        thumbnail = tk.Checkbutton(additionalData, text = "Thumbnail", onvalue=1, offvalue=0, width=14)
-        thumbnail.grid(row=0, column=4, sticky=tk.W, padx=10, pady=10)
+        self.description = tk.Checkbutton(self.additionalData, text = "Description", onvalue=1, offvalue=0, width=14)
+        self.description.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
+        self.metadata = tk.Checkbutton(self.additionalData, text = "Metadata", onvalue=1, offvalue=0, width=14)
+        self.metadata.grid(row=0, column=1, sticky=tk.W, padx=10, pady=10)
+        self.annotation = tk.Checkbutton(self.additionalData, text = "Annotation", onvalue=1, offvalue=0, width=14)
+        self.annotation.grid(row=0, column=2, sticky=tk.W, padx=10, pady=10)
+        self.subtitle = tk.Checkbutton(self.additionalData, text = "Subtitle", onvalue=1, offvalue=0, width=14)
+        self.subtitle.grid(row=0, column=3, sticky=tk.W, padx=10, pady=10)
+        self.thumbnail = tk.Checkbutton(self.additionalData, text = "Thumbnail", onvalue=1, offvalue=0, width=14)
+        self.thumbnail.grid(row=0, column=4, sticky=tk.W, padx=10, pady=10)
         #-------------------------------
         # third frame ends
 
         #fourth frame
-        downloadFrame = tk.Frame(self, width=758, height=200)
-        downloadFrame.grid(row=3, column=0, padx=20)
+        self.downloadFrame = tk.Frame(self, width=758, height=200)
+        self.downloadFrame.grid(row=3, column=0, padx=20)
 
-        self.downloadBtn = tk.Button(downloadFrame, text = "Download")
+        self.downloadBtn = tk.Button(self.downloadFrame, text = "Download", command = self.downloadVid)
         self.downloadBtn.pack()
         helv36 = tk.font.Font(family='Helvetica', size=14, weight='bold')
         self.downloadBtn['font'] = helv36
         #fourth frame ends
 
         # fifth frame
-        outputFrame = tk.Frame(self, width = 758, height = 200)
+        self.outputFrame = tk.Frame(self, width = 758, height = 200)
         # outputFrame['bg'] = 'orange'
-        outputFrame.grid_propagate(0)
-        outputFrame.grid(row=4, column=0, padx=20)
+        self.outputFrame.grid_propagate(0)
+        self.outputFrame.grid(row=4, column=0, padx=20)
 
-        outputWindow = tk.Text(outputFrame, width=90, height=10, state=tk.DISABLED)
-        outputWindow.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
+        self.outputWindow = tk.Text(self.outputFrame, width=90, height=10, state=tk.DISABLED)
+        self.outputWindow.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
 
         # fifth frame ends
 
     # testing function for directory selection
+    def downloadVid(self):
+        checkedRad = self.var.get()
+        links = []
+        if(checkedRad == "1"):
+            link = self.e1.get('1.0', 'end-1c')
+            if(len(link) != 43):
+                messagebox.showerror("Error", "Invalid youtube link")
+                return
+
+            links.append(link)
+            custName = self.customNameEntry.get()
+
+        else:
+            filename = self.e2.get('1.0', 'end-1c')
+            if(len(filename.strip()) == 0):
+                messagebox.showerror("Error", "Please provide file name")
+            links = self.readFileContents(filename)
+
+    def readFileContents(self, filename):
+        try:
+            f = open(filename, "r")
+            data = f.read()
+            data = data.split('\n')
+            links = []
+
+            for query in data:
+                res = request.urlopen('https://www.youtube.com/results?search_query='+query)
+                pattern = re.compile(r'\"videoId\":\"(.){11}\"')
+                search_results = pattern.finditer(str(res.read()))
+                for result in search_results:
+                    string = result.group()[11:-1]
+                    link = "https://www.youtube.com/watch?v="+string
+                    print(link)
+                    links.append(link)
+                    break
+
+            return links
+
+        except Exception as ex:
+            messagebox.showerror("Error", "File does not exists")
+
+    def checkRadio(self):
+        checkedRad = self.var.get()
+        if(checkedRad == "1"):
+            self.e2.configure(state="disabled")
+            self.e1.configure(state="normal")
+            self.customNameEntry.configure(state="normal")
+        if(checkedRad == "2"):
+            self.e2.configure(state="normal")
+            self.e1.configure(state="disabled")
+            self.customNameEntry.configure(state="disabled")
+
+
     def getDir(self):
         fileLoc = tk.filedialog.askdirectory()
         print(fileLoc)
