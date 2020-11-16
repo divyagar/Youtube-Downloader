@@ -94,17 +94,17 @@ class Frame1(tk.Frame):
         ##---------------------------------
 
         # row2 of second frame
-        self.customName = tk.StringVar()
-        self.customNameEntry = tk.Entry(self.secFrame, width=55, textvariable = self.customName)
+        self.customNameEntry = tk.Entry(self.secFrame, width=55)
         self.customNameEntry.grid(row=1, column=0, sticky = tk.W, padx=10)
 
+        self.location = ""
         self.askDirectoryBtn = tk.Button(self.secFrame, text = "select folder", command = self.getDir)
         self.askDirectoryBtn.grid(row=1, column=1, sticky=tk.W, padx=10)
 
-        self.qualities = ['best video, best audio', 'best video, worst audio', 'worst video, best audio', 'worst video, worst audio']
+        self.qualities = ['bestvideo,bestaudio', 'bestvideo,worstaudio', 'worstvideo,bestaudio', 'worstvideo,worstaudio']
         self.quality = tk.StringVar()
-        self.quality.set("best video, best audio")
-        self.qualitySelection = tk.OptionMenu(self.secFrame, self.quality, *self.qualities, command=self.getQuality)
+        self.quality.set("bestvideo,bestaudio")
+        self.qualitySelection = tk.OptionMenu(self.secFrame, self.quality, *self.qualities)
         self.qualitySelection.grid(row=1, column=2, sticky=tk.W, padx=10)
         #----------------------------------
         #second frame ends
@@ -121,15 +121,20 @@ class Frame1(tk.Frame):
         self.sub = tk.IntVar()
         self.thumb = tk.IntVar()
 
-        self.description = tk.Checkbutton(self.additionalData, text = "Description", onvalue=1, offvalue=0, width=14)
+        self.desChecked = tk.IntVar()
+        self.description = tk.Checkbutton(self.additionalData, text = "Description", onvalue=1, offvalue=0, width=14, variable=self.desChecked)
         self.description.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
-        self.metadata = tk.Checkbutton(self.additionalData, text = "Metadata", onvalue=1, offvalue=0, width=14)
+        self.metChecked = tk.IntVar()
+        self.metadata = tk.Checkbutton(self.additionalData, text = "Metadata", onvalue=1, offvalue=0, width=14, variable=self.metChecked)
         self.metadata.grid(row=0, column=1, sticky=tk.W, padx=10, pady=10)
-        self.annotation = tk.Checkbutton(self.additionalData, text = "Annotation", onvalue=1, offvalue=0, width=14)
+        self.annChecked = tk.IntVar()
+        self.annotation = tk.Checkbutton(self.additionalData, text = "Annotation", onvalue=1, offvalue=0, width=14, variable=self.annChecked)
         self.annotation.grid(row=0, column=2, sticky=tk.W, padx=10, pady=10)
-        self.subtitle = tk.Checkbutton(self.additionalData, text = "Subtitle", onvalue=1, offvalue=0, width=14)
+        self.subChecked = tk.IntVar()
+        self.subtitle = tk.Checkbutton(self.additionalData, text = "Subtitle", onvalue=1, offvalue=0, width=14, variable=self.subChecked)
         self.subtitle.grid(row=0, column=3, sticky=tk.W, padx=10, pady=10)
-        self.thumbnail = tk.Checkbutton(self.additionalData, text = "Thumbnail", onvalue=1, offvalue=0, width=14)
+        self.thuChecked = tk.IntVar()
+        self.thumbnail = tk.Checkbutton(self.additionalData, text = "Thumbnail", onvalue=1, offvalue=0, width=14, variable=self.thuChecked)
         self.thumbnail.grid(row=0, column=4, sticky=tk.W, padx=10, pady=10)
         #-------------------------------
         # third frame ends
@@ -158,15 +163,21 @@ class Frame1(tk.Frame):
     # testing function for directory selection
     def downloadVid(self):
         checkedRad = self.var.get()
-        links = []
+        links = {}
+        options = ""
         if(checkedRad == "1"):
             link = self.e1.get('1.0', 'end-1c')
             if(len(link) != 43):
                 messagebox.showerror("Error", "Invalid youtube link")
                 return
 
-            links.append(link)
+            string = link[-11:-1]
+            string += link[-1]
+            links[string] = link
             custName = self.customNameEntry.get()
+            if(len(custName.strip()) > 0):
+                links.pop(string)
+                links[custName] = link
 
         else:
             filename = self.e2.get('1.0', 'end-1c')
@@ -174,13 +185,43 @@ class Frame1(tk.Frame):
                 messagebox.showerror("Error", "Please provide file name")
             links = self.readFileContents(filename)
 
+        print(links)
+
+        options += " -f " + self.quality.get()
+
+        if(self.desChecked.get()):
+            options += " --write-description"
+
+        if(self.metChecked.get()):
+            options += " --write-info-json"
+
+        if(self.annChecked.get()):
+            options += " --write-annotations"
+
+        if(self.subChecked.get()):
+            options += " --write-sub"
+
+        if(self.thuChecked.get()):
+            options += " --write-thumbnail"
+
+        if(len(self.location) > 0):
+            options += ' -o "' + self.location + '/'
+
+        else:
+            options += 'o "'
+
+        finalLinks = []
+        for link in links:
+            finalLinks.append("youtube-dl" + options + link + '.mp4" ' + links[link])
+
+        print(finalLinks)
+
     def readFileContents(self, filename):
         try:
             f = open(filename, "r")
             data = f.read()
             data = data.split('\n')
-            links = []
-
+            links = {}
             for query in data:
                 res = request.urlopen('https://www.youtube.com/results?search_query='+query)
                 pattern = re.compile(r'\"videoId\":\"(.){11}\"')
@@ -188,8 +229,7 @@ class Frame1(tk.Frame):
                 for result in search_results:
                     string = result.group()[11:-1]
                     link = "https://www.youtube.com/watch?v="+string
-                    print(link)
-                    links.append(link)
+                    links[string] = link
                     break
 
             return links
@@ -210,11 +250,7 @@ class Frame1(tk.Frame):
 
 
     def getDir(self):
-        fileLoc = tk.filedialog.askdirectory()
-        print(fileLoc)
-
-    def getQuality(self, *qualitiesArgs):
-        print(self.quality.get())
+        self.location = tk.filedialog.askdirectory()
 
 class Frame2(tk.Frame):
     def __init__(self, parent):
