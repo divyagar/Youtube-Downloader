@@ -1,10 +1,11 @@
 import tkinter as tk
 import tkinter.filedialog
-from urllib import request
+from urllib import request, parse
 import re
 from tkcalendar import DateEntry
 from tkinter import messagebox
 import os
+import time
 
 class GuiApp(tk.Frame):
     def __init__(self, master):
@@ -163,6 +164,7 @@ class Frame1(tk.Frame):
 
     # testing function for directory selection
     def preprocess(self):
+        self.insertValue('Pre-Processing starts... \n')
         checkedRad = self.var.get()
         links = {}
         options = ""
@@ -184,11 +186,13 @@ class Frame1(tk.Frame):
             filename = self.e2.get('1.0', 'end-1c')
             if(len(filename.strip()) == 0):
                 messagebox.showerror("Error", "Please provide file name")
+                return
+
             links = self.readFileContents(filename)
 
         print(links)
 
-        options += " -f " + self.quality.get()
+        options += ' -f "' + self.quality.get() + '"'
 
         if(self.desChecked.get()):
             options += " --write-description"
@@ -209,24 +213,36 @@ class Frame1(tk.Frame):
             options += ' -o "' + self.location + '/'
 
         else:
-            options += 'o "'
+            options += ' -o "'
 
         finalLinks = []
+        print(links)
         for link in links:
             finalLinks.append("youtube-dl" + options + link + '.mp4" ' + links[link])
 
         print(finalLinks)
+        self.insertValue("Pre-processing ends... \n")
+        self.downloadVid(finalLinks)
+
+    def insertValue(self, string):
+        self.outputWindow.configure(state="normal")
+        self.outputWindow.insert("end", string)
+        self.outputWindow.configure(state="disabled")
+        self.outputWindow.update()
 
     def readFileContents(self, filename):
         try:
             f = open(filename, "r")
             data = f.read()
             data = data.split('\n')
+            print(data)
             links = {}
             for query in data:
+                query = query.replace(" ", "%20")
                 res = request.urlopen('https://www.youtube.com/results?search_query='+query)
                 pattern = re.compile(r'\"videoId\":\"(.){11}\"')
                 search_results = pattern.finditer(str(res.read()))
+                print("search ", type(search_results))
                 for result in search_results:
                     string = result.group()[11:-1]
                     link = "https://www.youtube.com/watch?v="+string
@@ -237,6 +253,19 @@ class Frame1(tk.Frame):
 
         except Exception as ex:
             messagebox.showerror("Error", "File does not exists")
+            return
+
+    def downloadVid(self, finalLinks):
+        self.insertValue("Downloading starts... \n")
+        for link in finalLinks:
+            self.insertValue("Executing "+link+ " \n")
+            errorCode = os.system(link)
+            if(errorCode == 0):
+                self.insertValue("Command executed successfully... \n")
+            else:
+                self.insertValue("Error while downloading video... \n")
+
+        self.insertValue("Downloading ends... \n")
 
     def checkRadio(self):
         checkedRad = self.var.get()
@@ -332,6 +361,7 @@ class Frame2(tk.Frame):
 
     # testing function for directory selection
     def preprocess(self):
+        self.insertValue('Pre-Processing starts... \n')
         checkedRad = self.var.get()
         links = {}
         options = " -x"
@@ -368,6 +398,7 @@ class Frame2(tk.Frame):
             finalLinks.append("youtube-dl" + options + link + '.mp3" ' + links[link])
 
         print(finalLinks)
+        self.insertValue('Pre-Processing ends... \n')
         self.downloadVid(finalLinks)
 
 
@@ -378,6 +409,7 @@ class Frame2(tk.Frame):
             data = data.split('\n')
             links = {}
             for query in data:
+                query = query.replace(" ", "%20")
                 res = request.urlopen('https://www.youtube.com/results?search_query='+query)
                 pattern = re.compile(r'\"videoId\":\"(.){11}\"')
                 search_results = pattern.finditer(str(res.read()))
@@ -393,8 +425,22 @@ class Frame2(tk.Frame):
             messagebox.showerror("Error", "File does not exists")
 
     def downloadVid(self, finallinks):
+        self.insertValue("Downloading starts... \n")
         for link in finallinks:
-            os.system(link)
+            self.insertValue("Executing "+link+ " \n")
+            errorCode = os.system(link)
+            if(errorCode == 0):
+                self.insertValue("Command executed successfully... \n")
+            else:
+                self.insertValue("Error while downloading video... \n")
+
+        self.insertValue("Downloading ends... \n")
+
+    def insertValue(self, string):
+        self.outputWindow.configure(state="normal")
+        self.outputWindow.insert("end", string)
+        self.outputWindow.configure(state="disabled")
+        self.outputWindow.update()
 
     def getDir(self):
         self.location = tk.filedialog.askdirectory()
@@ -525,7 +571,7 @@ class Frame3(tk.Frame):
         downloadFrame = tk.Frame(self, width=758, height=200)
         downloadFrame.grid(row=4, column=0, padx=20)
 
-        self.downloadBtn = tk.Button(downloadFrame, text = "Download", command = self.downloadVide)
+        self.downloadBtn = tk.Button(downloadFrame, text = "Download", command = self.preProcess)
         self.downloadBtn.pack()
         helv36 = tk.font.Font(family='Helvetica', size=14, weight='bold')
         self.downloadBtn['font'] = helv36
@@ -545,7 +591,8 @@ class Frame3(tk.Frame):
 
         #fifth row ends
 
-    def downloadVide(self):
+    def preProcess(self):
+        self.insertValue('Pre-Processing starts... \n')
         link = self.playListEntry.get('1.0', 'end-1c')
         link = " " + link
         if(len(link) == 0):
@@ -634,8 +681,27 @@ class Frame3(tk.Frame):
 
             print(options)
 
-        command = "youtube-dl" + options + link
+        command = "youtube-dl -cit " + options + link
         print(command)
+        self.insertValue('Pre-Processing ends... \n')
+        self.downloadVid(command)
+
+    def downloadVid(self, command):
+        self.insertValue("Downloading starts... \n")
+        self.insertValue("Executing " + command + " \n")
+        errorCode = os.system(command)
+        if (errorCode == 0):
+            self.insertValue("Command executed successfully... \n")
+        else:
+            self.insertValue("Error while downloading playlist... \n")
+
+        self.insertValue("Downloading ends... \n")
+
+    def insertValue(self, string):
+        self.outputWindow.configure(state="normal")
+        self.outputWindow.insert("end", string)
+        self.outputWindow.configure(state="disabled")
+        self.outputWindow.update()
 
     def checkRadioBut(self):
         value = self.criteria.get()
