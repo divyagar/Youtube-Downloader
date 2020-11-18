@@ -57,7 +57,6 @@ class Frame1(tk.Frame):
 
         # Frame for checkboxes and their respective entry widgets
         self.checkBoxFrame = tk.Frame(self, width = 758, height = 120, borderwidth = 1)
-        # checkBoxFrame['bg'] = 'red'
         self.checkBoxFrame.grid_propagate(0)
         self.checkBoxFrame.grid(row=0, column=0, padx=20, pady=5)
 
@@ -113,10 +112,10 @@ class Frame1(tk.Frame):
 
         # third frame
         self.additionalData = tk.Frame(self, width = 758, height = 50)
-        # additionalData['bg'] = 'yellow'
         self.additionalData.grid_propagate(0)
         self.additionalData.grid(row=2, column=0, padx=20)
 
+        # variables for check buttons
         self.des = tk.IntVar()
         self.meta = tk.IntVar()
         self.annot = tk.IntVar()
@@ -583,7 +582,7 @@ class Frame3(tk.Frame):
         self.outputFrame.grid_propagate(0)
         self.outputFrame.grid(row=5, column=0, padx=20)
 
-        self.outputWindow = tk.Text(self.outputFrame, width=90, height=13, state=tk.DISABLED)
+        self.outputWindow = tk.Text(self.outputFrame, width=90, height=10, state=tk.DISABLED)
         self.outputWindow.grid(row=0, column=0, sticky=tk.W, padx=10, pady=10)
 
         self.disableSub2()
@@ -752,6 +751,8 @@ class Frame3(tk.Frame):
 
 
 root = tk.Tk()
+root.minsize(800, 560)
+root.maxsize(800, 560)
 app = GuiApp(root)
 app.pack(side = "left", fill = "both", expand = True)
 root.mainloop()
