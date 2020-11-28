@@ -751,6 +751,7 @@ class Frame3(tk.Frame):
 
 
 root = tk.Tk()
+root.title("Youtube-Downloader")
 root.minsize(800, 560)
 root.maxsize(800, 560)
 app = GuiApp(root)
